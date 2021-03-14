@@ -21,14 +21,7 @@ const Index: React.FC = () => {
   return (
     <Layout>
       <div className={classes.container}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <Terminal id="terminal" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Terminal id="terminal2" />
-          </Grid>
-        </Grid>
+        <Terminal id="terminal" />
       </div>
     </Layout>
   )
