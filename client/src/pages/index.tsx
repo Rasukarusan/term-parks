@@ -37,12 +37,12 @@ const IndexPage = () => {
     <Layout>
       <div className={classes.container}>
         <Head>
-          <title>NextJS Typescript Starter</title>
+          <title>Share Terminal</title>
           <link rel="icon" href="/favicon.png" />
         </Head>
 
         <div className={classes.main}>
-          <h1 className={classes.title}>NextJS Typescript Starter</h1>
+          <h1 className={classes.title}>Share Terminal!</h1>
           <p className={classes.description}>
             Read{' '}
             <Link href="https://github.com/Rasukarusan/nextjs-typescript-starter">
