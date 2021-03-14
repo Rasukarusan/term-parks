@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
 
 const useStyles = makeStyles({
   container: {
@@ -8,15 +9,26 @@ const useStyles = makeStyles({
   },
 })
 
-export const TerminalComponent: React.FC = () => {
-  const term = new Terminal()
+interface Props {
+  id: string
+}
+export const TerminalComponent: React.FC<Props> = ({ id }) => {
+  const term = new Terminal({
+    cols: 20,
+    theme: {
+      background: 'black',
+    },
+  })
+  const fitAddon = new FitAddon()
   const enter = () => term.write('\r\n$ ')
   const backspace = () => term.write('\b \b')
   const setup = () => {
-    term.open(document.getElementById('terminal'))
+    term.loadAddon(fitAddon)
+    term.open(document.getElementById(id))
     term.write('Welcome \x1B[1;3;31mxterm.js\x1B[0m')
     enter()
     term.onKey(onKey)
+    fitAddon.fit()
   }
 
   const onKey = (e: { key: string; domEvent: KeyboardEvent }) => {
@@ -38,5 +50,7 @@ export const TerminalComponent: React.FC = () => {
     setup()
     return () => term.dispose()
   })
-  return <div id="terminal" />
+
+  const classes = useStyles()
+  return <div id={id} />
 }
