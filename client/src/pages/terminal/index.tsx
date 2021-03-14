@@ -13,7 +13,7 @@ const Terminal = dynamic(
 const useStyles = makeStyles({
   container: {
     minHeight: '100vh',
-    padding: '0 0.5rem',
+    padding: 20,
   },
 })
 const Index: React.FC = () => {
@@ -21,7 +21,14 @@ const Index: React.FC = () => {
   return (
     <Layout>
       <div className={classes.container}>
-        <Terminal />
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Terminal id="terminal" />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Terminal id="terminal2" />
+          </Grid>
+        </Grid>
       </div>
     </Layout>
   )
