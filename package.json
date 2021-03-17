@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "dev": "lerna run dev --parallel --stream --scope=@charminal/{client,server}"
+    "dev": "lerna run dev --parallel --stream --scope=@charminal/{client,server}",
+    "clean":"lerna clean"
   },
   "devDependencies": {
     "lerna": "^4.0.0"
