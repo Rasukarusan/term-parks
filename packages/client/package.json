@@ -30,5 +30,22 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^2.0.5"
+  },
+  "name": "@charminal/client",
+  "description": "> TODO: description",
+  "version": "0.0.0",
+  "author": "Rasukarusan <gta_youtube@yahoo.co.jp>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/client.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
