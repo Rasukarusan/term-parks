@@ -44,9 +44,8 @@ const IndexPage = () => {
         <div className={classes.main}>
           <h1 className={classes.title}>Share Terminal!</h1>
           <p className={classes.description}>
-            Read{' '}
-            <Link href="https://github.com/Rasukarusan/nextjs-typescript-starter">
-              <a target="_blank">github</a>
+            <Link href="/terminal">
+              <a>Open Terminal</a>
             </Link>
           </p>
         </div>
