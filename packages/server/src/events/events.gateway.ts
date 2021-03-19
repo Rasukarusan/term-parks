@@ -14,12 +14,16 @@ export class EventsGateway {
   @WebSocketServer()
   server: Server
 
-  @SubscribeMessage('events')
-  findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-    console.log('きた')
-    return from([1, 2, 3]).pipe(
-      map((item) => ({ event: 'events', data: item })),
-    )
+  @SubscribeMessage('terminals')
+  handleEvent(@MessageBody() pid: number): number {
+    const term = globalThis.terms[pid]
+    const socket = this.server
+
+    term.on('data', function (msg) {
+      console.log('message!!!!', msg)
+      socket.send(msg)
+    })
+    return pid
   }
 
   @SubscribeMessage('identity')
