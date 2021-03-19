@@ -1,12 +1,25 @@
-import { Controller, Get } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { AppService } from './app.service'
+import * as pty from 'node-pty'
 
-@Controller()
+import { CreateTerminalRequestDto } from './app.dto'
+
+@Controller('terminals')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  runTerminal(): number {
-    return this.appService.runTerminal()
+  @Post('/')
+  createTerminal(@Query() dto: CreateTerminalRequestDto): number {
+    return this.appService.createTerminal(dto)
+  }
+
+  @Get('/:pid')
+  getTerminal(@Param('pid') pid: number): pty.IPty {
+    return this.appService.getTerminal(pid)
+  }
+
+  @Get('/')
+  getTerminals(): string[] {
+    return this.appService.getTerminals()
   }
 }
