@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "lerna run dev --parallel --stream --scope=@charminal/{client,server}",
+    "dev:client": "lerna run dev --parallel --stream --scope=@charminal/server",
+    "dev:server": "lerna run dev --parallel --stream --scope=@charminal/server",
     "clean":"lerna clean",
     "lint":"lerna run lint --parallel --stream --scope=@charminal/{client,server}",
     "lint:fix":"lerna run lint:fix --parallel --stream --scope=@charminal/{client,server}"
