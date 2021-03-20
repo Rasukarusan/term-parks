@@ -44,12 +44,12 @@ export const TerminalComponent: React.FC<Props> = ({ id }) => {
     const socket = io('http://localhost:3001')
     socket.emit('connectTerminal', pid)
 
-    // 1文字入力するたびに実行される
+    // ①1文字入力するたびに実行される
     term.onData((data) => {
       socket.emit('data', { pid, data })
     })
 
-    // serverの仮想ターミナルで入力されるたびに実行される
+    // ④serverの仮想ターミナルで入力されるたびに実行される
     socket.on('data', (data) => {
       term.write(data)
     })
