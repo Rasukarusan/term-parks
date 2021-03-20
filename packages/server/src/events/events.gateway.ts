@@ -5,9 +5,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets'
 import { Server } from 'socket.io'
+import { Logger } from '@nestjs/common'
 
 @WebSocketGateway()
 export class EventsGateway {
+  private readonly logger = new Logger(EventsGateway.name)
+
   @WebSocketServer()
   server: Server
 
@@ -15,10 +18,10 @@ export class EventsGateway {
   handleEvent(@MessageBody() pid: number) {
     const term = globalThis.terms[pid]
     if (!term) {
-      console.log('Not Found terminal ' + pid)
+      this.logger.error(`Not Found terminal ${pid}`)
       return
     }
-    console.log('Connected to terminal ' + pid)
+    this.logger.log('Connected to terminal ' + pid)
     const log = globalThis.logs[pid]
 
     // ③ 仮想ターミナルに書き込みがあるたびに実行される
