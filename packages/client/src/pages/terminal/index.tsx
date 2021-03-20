@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Layout } from '@/components/layout'
 import { makeStyles } from '@material-ui/core/styles'
@@ -17,6 +18,9 @@ const useStyles = makeStyles({
     minHeight: '100vh',
     padding: 20,
   },
+  button: {
+    margin: 5,
+  },
 })
 const Index: React.FC = () => {
   const classes = useStyles()
@@ -24,7 +28,13 @@ const Index: React.FC = () => {
 
   const handleClick = async () => {
     console.log('click')
-    const socket = io('http://localhost:3001')
+    const socket = io('ws://localhost:3001')
+    // const pid = await createTerminal()
+    // socket.emit('terminals', pid, (res) => {
+    //   console.log('"terminals"にemitした結果', res)
+    //   setData(res)
+    // })
+    return
 
     socket.on('connect', async () => {
       console.log('Connected')
@@ -81,15 +91,33 @@ const Index: React.FC = () => {
     <Layout>
       <div className={classes.container}>
         <Terminal id="terminal" />
-        <Button onClick={handleClick} color="primary" variant="contained">
+        <Button
+          className={classes.button}
+          onClick={handleClick}
+          color="primary"
+          variant="contained"
+        >
           Click
         </Button>
-        <Button onClick={handleClick2} color="primary" variant="contained">
+        <Button
+          className={classes.button}
+          onClick={handleClick2}
+          color="primary"
+          variant="contained"
+        >
           POST
         </Button>
-        <Button onClick={handleClick3} color="primary" variant="contained">
+        <Button
+          className={classes.button}
+          onClick={handleClick3}
+          color="primary"
+          variant="contained"
+        >
           GET
         </Button>
+        <Link href="/">
+          <a>HOME</a>
+        </Link>
       </div>
     </Layout>
   )

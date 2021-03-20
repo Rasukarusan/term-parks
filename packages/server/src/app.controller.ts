@@ -12,14 +12,4 @@ export class AppController {
   createTerminal(@Query() dto: CreateTerminalRequestDto): number {
     return this.appService.createTerminal(dto)
   }
-
-  @Get('/:pid')
-  getTerminal(@Param('pid') pid: number): pty.IPty {
-    return this.appService.getTerminal(pid)
-  }
-
-  @Get('/')
-  getTerminals(): string[] {
-    return this.appService.getTerminals()
-  }
 }

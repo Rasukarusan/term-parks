@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumber } from 'class-validator'
 
+import { Type } from 'class-transformer'
 export class CreateTerminalRequestDto {
+  @IsNumber()
+  @Type(() => Number)
   @ApiProperty()
-  cols!: number
+  cols: number
 
+  @IsNumber()
+  @Type(() => Number)
   @ApiProperty()
-  rows!: number
-}
-
-export class GetTerminalRequestDto {
-  @ApiProperty()
-  pid!: number
+  rows: number
 }
