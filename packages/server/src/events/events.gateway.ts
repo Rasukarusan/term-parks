@@ -3,10 +3,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets'
-import { from, Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
 import { Server } from 'socket.io'
 
 @WebSocketGateway()
@@ -14,21 +11,27 @@ export class EventsGateway {
   @WebSocketServer()
   server: Server
 
-  @SubscribeMessage('terminals')
-  handleEvent(@MessageBody() pid: number): number {
+  @SubscribeMessage('connectTerminal')
+  handleEvent(@MessageBody() pid: number) {
     const term = globalThis.terms[pid]
-    const socket = this.server
+    if (!term) {
+      console.log('Not Found terminal ' + pid)
+      return
+    }
+    console.log('Connected to terminal ' + pid)
+    const log = globalThis.logs[pid]
 
-    term.on('data', function (msg) {
-      console.log('message!!!!', msg)
-      socket.send(msg)
+    // ③ 仮想ターミナルに書き込みがあるたびに実行される
+    term.on('data', (data) => {
+      this.server.emit('data', data)
     })
-    return pid
   }
 
-  @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<number> {
-    console.log('きた2')
-    return data
+  // ②クライアントのターミナルに入力があるたびに実行される
+  @SubscribeMessage('data')
+  async data(@MessageBody() params: any) {
+    const { pid, data } = params
+    const term = globalThis.terms[parseInt(pid)]
+    term.write(data)
   }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
+import io from 'socket.io-client'
 
 interface Props {
   id: string
@@ -20,10 +21,40 @@ export const TerminalComponent: React.FC<Props> = ({ id }) => {
     term.open(document.getElementById(id))
     fitAddon.fit()
     term.focus()
-    runFakeTerminal()
+
+    runRealTerminal()
+    // runFakeTerminal()
   }
 
-  const runFakeTerminal = () => {
+  const runRealTerminal = (pid?: number) => {
+    if (pid) {
+      connectTerminal(pid)
+      return
+    }
+    const cols = 80
+    const rows = 30
+    fetch(`http://localhost:3001/terminals?cols=${cols}&rows=${rows}`, {
+      method: 'POST',
+    })
+      .then((res) => res.text())
+      .then((pid) => connectTerminal(parseInt(pid)))
+  }
+
+  const connectTerminal = (pid: number) => {
+    const socket = io('http://localhost:3001')
+    socket.emit('connectTerminal', pid)
+
+    // 1文字入力するたびに実行される
+    term.onData((data) => {
+      socket.emit('data', { pid, data })
+    })
+
+    // serverの仮想ターミナルで入力されるたびに実行される
+    socket.on('data', (data) => {
+      term.write(data)
+    })
+  }
+  const runFakeTerminal = (): void => {
     term.write('Welcome xterm.js. \x1B[1;3;31mThis is Fake Terminal!\x1B[0m')
     enter()
     term.onKey(onKey)
@@ -42,6 +73,17 @@ export const TerminalComponent: React.FC<Props> = ({ id }) => {
     } else if (printable) {
       term.write(e.key)
     }
+  }
+
+  const createTerminal = async () => {
+    return await fetch(
+      'http://localhost:3001/terminals?cols=' + 100 + '&rows=' + 50,
+      {
+        method: 'POST',
+      }
+    ).then((res) => {
+      return res.json()
+    })
   }
 
   useEffect(() => {
