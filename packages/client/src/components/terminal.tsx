@@ -5,91 +5,113 @@ import io from 'socket.io-client'
 
 interface Props {
   id: string
+  rows?: number
+  cols?: number
+  fake: boolean
 }
-export const TerminalComponent: React.FC<Props> = ({ id }) => {
-  const term = new Terminal({
-    cursorBlink: true,
-    theme: {
-      background: 'black',
-    },
-  })
-  const fitAddon = new FitAddon()
-  const enter = () => term.write('\r\n$ ')
-  const backspace = () => term.write('\b \b')
-  const setup = () => {
+
+interface RealTerminalParams {
+  pid?: number
+  rows?: number
+  cols?: number
+  term: Terminal
+}
+
+const HOST = 'http://localhost:3001'
+
+export const TerminalComponent: React.FC<Props> = ({
+  id,
+  cols = 80,
+  rows = 24,
+  fake,
+}) => {
+  const [pid, setPid] = React.useState<number>()
+  const [term, setTerm] = React.useState<Terminal>()
+
+  const createTerminal = (rows: number, cols: number): Terminal => {
+    const term = new Terminal({ cursorBlink: true, cols, rows })
+    const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(document.getElementById(id))
     fitAddon.fit()
     term.focus()
-
-    runRealTerminal()
-    // runFakeTerminal()
+    return term
   }
 
-  const runRealTerminal = (pid?: number) => {
+  const setup = () => {
+    disposeTerminal()
+    const term = createTerminal(rows, cols)
+    if (fake) {
+      runFakeTerminal(term)
+    } else {
+      runRealTerminal({ term, rows, cols })
+    }
+  }
+
+  const runRealTerminal = (params: RealTerminalParams) => {
+    const { term, pid, cols, rows } = params
     if (pid) {
-      connectTerminal(pid)
+      connectTerminal(term, pid)
       return
     }
-    const cols = 80
-    const rows = 30
-    fetch(`http://localhost:3001/terminals?cols=${cols}&rows=${rows}`, {
-      method: 'POST',
-    })
+    fetch(`${HOST}/terminals?cols=${cols}&rows=${rows}`, { method: 'POST' })
       .then((res) => res.text())
-      .then((pid) => connectTerminal(parseInt(pid)))
+      .then((pid) => {
+        connectTerminal(term, parseInt(pid))
+        setPid(parseInt(pid))
+      })
   }
 
-  const connectTerminal = (pid: number) => {
-    const socket = io('http://localhost:3001')
+  const connectTerminal = (term: Terminal, pid: number) => {
+    const socket = io(HOST)
     socket.emit('connectTerminal', pid)
 
     // ①1文字入力するたびに実行される
     term.onData((data) => {
       socket.emit('data', { pid, data })
     })
-
     // ④serverの仮想ターミナルで入力されるたびに実行される
     socket.on('data', (data) => {
       term.write(data)
     })
-  }
-  const runFakeTerminal = (): void => {
-    term.write('Welcome xterm.js. \x1B[1;3;31mThis is Fake Terminal!\x1B[0m')
-    enter()
-    term.onKey(onKey)
+    setTerm(term)
   }
 
-  const onKey = (e: { key: string; domEvent: KeyboardEvent }) => {
-    const ev = e.domEvent
-    const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey
-
-    if (ev.keyCode === 13) {
-      enter()
-    } else if (ev.keyCode === 8) {
-      if (term.buffer.active.cursorX > 2) {
-        backspace()
-      }
-    } else if (printable) {
-      term.write(e.key)
+  const disposeTerminal = () => {
+    if (term) {
+      term.dispose()
     }
+    if (pid) {
+      fetch(`${HOST}/terminals/dispose?pid=${pid}`, {
+        method: 'POST',
+      }).then(() => setPid(null))
+    }
+    setTerm(null)
   }
 
-  const createTerminal = async () => {
-    return await fetch(
-      'http://localhost:3001/terminals?cols=' + 100 + '&rows=' + 50,
-      {
-        method: 'POST',
+  const runFakeTerminal = (term: Terminal): void => {
+    term.write('Welcome Term Park! \x1B[1;3;31mFake Terminal Now.\x1B[0m')
+    term.write('\r\n$ ')
+    term.onKey((e: { key: string; domEvent: KeyboardEvent }) => {
+      const ev = e.domEvent
+      const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey
+
+      if (ev.key === 'Enter') {
+        term.write('\r\n$ ')
+      } else if (ev.key === 'Backspace') {
+        if (term.buffer.active.cursorX > 2) {
+          term.write('\b \b')
+        }
+      } else if (printable) {
+        term.write(e.key)
       }
-    ).then((res) => {
-      return res.json()
     })
+    setTerm(term)
   }
 
   useEffect(() => {
     setup()
-    return () => term.dispose()
-  }, [])
+  }, [fake])
 
   return <div id={id} />
 }

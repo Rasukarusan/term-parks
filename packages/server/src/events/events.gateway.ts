@@ -22,11 +22,14 @@ export class EventsGateway {
       return
     }
     this.logger.log('Connected to terminal ' + pid)
-    const log = globalThis.logs[pid]
 
     // ③ 仮想ターミナルに書き込みがあるたびに実行される
-    term.on('data', (data) => {
-      this.server.emit('data', data)
+    term.onData((data) => {
+      // bufferUtf8(this.server, 5)
+      setTimeout(() => {
+        this.server.emit('data', data)
+      }, 5)
+      // this.server.emit('data', data)
     })
   }
 

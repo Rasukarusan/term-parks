@@ -2,7 +2,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Layout } from '@/components/layout'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, Button } from '@material-ui/core'
+import { Grid, Button, Box } from '@material-ui/core'
 import io from 'socket.io-client'
 import { useState } from 'react'
 
@@ -15,8 +15,11 @@ const Terminal = dynamic(
 
 const useStyles = makeStyles({
   container: {
-    minHeight: '100vh',
     padding: 20,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     margin: 5,
@@ -24,100 +27,43 @@ const useStyles = makeStyles({
 })
 const Index: React.FC = () => {
   const classes = useStyles()
-  const [data, setData] = useState('')
+  const [fake, setFake] = useState(true)
 
-  const handleClick = async () => {
-    console.log('click')
-    const socket = io('ws://localhost:3001')
-    // const pid = await createTerminal()
-    // socket.emit('terminals', pid, (res) => {
-    //   console.log('"terminals"にemitした結果', res)
-    //   setData(res)
-    // })
-    return
-
-    socket.on('connect', async () => {
-      console.log('Connected')
-      const pid = await createTerminal()
-      socket.emit('terminals', pid, (res) => {
-        console.log('"terminals"にemitした結果', res)
-        setData(res)
-      })
-    })
-    socket.on('message', function (data) {
-      console.log('きたよえ', data)
-    })
-    socket.on('terminals', function (data) {
-      console.log('event', data)
-    })
-    socket.on('exception', function (data) {
-      console.log('event', data)
-    })
-    socket.on('disconnect', function () {
-      console.log('Disconnected')
-    })
-  }
-
-  const createTerminal = async () => {
-    return await fetch(
-      'http://localhost:3001/terminals?cols=' + 100 + '&rows=' + 50,
-      {
-        method: 'POST',
-      }
-    ).then((res) => {
-      return res.json()
-    })
-  }
-
-  const getTerminal = async (pid: number) => {
-    return await fetch('http://localhost:3001/terminals/' + pid, {
-      method: 'GET',
-    }).then((res) => res.json())
-  }
-
-  const handleClick2 = async () => {
-    const pid = await createTerminal()
-    const term = await getTerminal(pid)
-    console.log(term)
-  }
-
-  const handleClick3 = async () => {
-    console.log('click')
-    setData('hogeeeeeeeeee')
-    return
+  const handleConnect = () => {
+    setFake(!fake)
   }
 
   return (
     <Layout>
       <div className={classes.container}>
-        <Terminal id="terminal" />
+        <Terminal id="terminal" fake={fake} />
         <Button
           className={classes.button}
-          onClick={handleClick}
-          color="primary"
+          onClick={handleConnect}
+          color={fake ? 'primary' : 'secondary'}
           variant="contained"
+          fullWidth={false}
         >
-          Click
+          {fake
+            ? 'Connect Real Terminal'
+            : 'Dispose and Switch to Fake Terminal'}
+        </Button>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          className={classes.button}
+          variant="contained"
+          onClick={() => (location.href = '/')}
+        >
+          HOME
         </Button>
         <Button
           className={classes.button}
-          onClick={handleClick2}
-          color="primary"
           variant="contained"
+          onClick={() => location.reload()}
         >
-          POST
+          RELOAD
         </Button>
-        <Button
-          className={classes.button}
-          onClick={handleClick3}
-          color="primary"
-          variant="contained"
-        >
-          GET
-        </Button>
-        <Link href="/">
-          <a>HOME</a>
-        </Link>
       </div>
     </Layout>
   )

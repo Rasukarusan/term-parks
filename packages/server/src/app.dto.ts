@@ -13,3 +13,10 @@ export class CreateTerminalRequestDto {
   @ApiProperty()
   rows: number
 }
+
+export class DisposeRequestDto {
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty()
+  pid: number
+}
