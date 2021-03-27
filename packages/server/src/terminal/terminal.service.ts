@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common'
-import * as os from 'os'
 import * as pty from 'node-pty'
-import { CreateTerminalRequestDto, DisposeRequestDto } from './app.dto'
+import { CreateTerminalRequestDto, DisposeTerminalRequestDto } from './dto'
 
 @Injectable()
-export class AppService {
-  private readonly logger = new Logger(AppService.name)
-  createTerminal(dto: CreateTerminalRequestDto): number {
+export class TerminalService {
+  private readonly logger = new Logger(TerminalService.name)
+
+  create(dto: CreateTerminalRequestDto): number {
     const { cols, rows } = dto
     if (!globalThis.terms) globalThis.terms = []
     if (!globalThis.logs) globalThis.logs = []
@@ -18,17 +18,16 @@ export class AppService {
       cols: cols || 80,
       rows: rows || 24,
       cwd: process.platform === 'win32' ? undefined : env.PWD,
-      env: env,
+      env,
     })
     globalThis.terms[term.pid] = term
     globalThis.logs[term.pid] = ''
     return term.pid
   }
 
-  dispose(dto: DisposeRequestDto): boolean {
+  dispose(dto: DisposeTerminalRequestDto): boolean {
     const { pid } = dto
     this.logger.log(`Target term ${pid}`)
-    console.log(pid)
     const term: pty.IPty = globalThis.terms[pid]
     if (!term) {
       this.logger.warn(`Not found term ${pid}`)
