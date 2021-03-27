@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { TerminalService } from './terminal.service';
-import { TerminalController } from './terminal.controller';
+import { Module } from '@nestjs/common'
+import { TerminalService } from './terminal.service'
+import { TerminalController } from './terminal.controller'
 
 @Module({
   controllers: [TerminalController],
-  providers: [TerminalService]
+  providers: [TerminalService],
 })
 export class TerminalModule {}
