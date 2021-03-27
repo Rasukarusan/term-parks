@@ -64,7 +64,7 @@ export const TerminalComponent: React.FC<Props> = ({
 
   const connectTerminal = (term: Terminal, pid: number) => {
     const socket = io(HOST)
-    socket.emit('connectTerminal', pid)
+    socket.emit('connectTerm', { pid })
 
     // ①1文字入力するたびに実行される
     term.onData((data) => {

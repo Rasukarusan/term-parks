@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
-import { EventsModule } from './events/events.module'
 import { TerminalModule } from './terminal/terminal.module'
+import { TermIoModule } from './term-io/term-io.module'
 
 @Module({
-  imports: [EventsModule, TerminalModule],
+  imports: [TerminalModule, TermIoModule],
 })
 export class AppModule {}
