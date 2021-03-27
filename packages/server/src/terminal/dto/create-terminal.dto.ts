@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber } from 'class-validator'
-
+import { IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
+
 export class CreateTerminalRequestDto {
   @IsNumber()
   @Type(() => Number)
@@ -12,11 +12,4 @@ export class CreateTerminalRequestDto {
   @Type(() => Number)
   @ApiProperty()
   rows: number
-}
-
-export class DisposeRequestDto {
-  @IsNumber()
-  @Type(() => Number)
-  @ApiProperty()
-  pid: number
 }
