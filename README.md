@@ -1,7 +1,7 @@
 Terminal Parks
 ====
 
-![demo.gif](https://user-images.githubusercontent.com/17779386/116769656-a40c5080-aa78-11eb-9495-c02b4a0568ee.png)
+![demo.gif](https://user-images.githubusercontent.com/17779386/116769691-f188bd80-aa78-11eb-89db-401f801f917a.gif)
 
 ## Description
 
